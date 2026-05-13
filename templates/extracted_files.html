@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extracted Files - {{ file.original_filename }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 30px;
+        }
+        
+        /* Glassmorphism Effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 35px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* File Item Card */
+        .file-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+            animation: fadeInRight 0.5s ease;
+        }
+        
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .file-card:hover {
+            transform: translateX(8px) translateY(-3px);
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+        
+        /* Search Bar */
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .search-wrapper i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 18px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Stats Cards */
+        .stat-mini-card {
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .stat-mini-card:hover {
+            transform: translateY(-5px);
+            background: linear-gradient(135deg, #667eea10, #764ba210);
+        }
+        
+        /* File Preview Modal */
+        .modal-content {
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .code-preview {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            max-height: 500px;
+            line-height: 1.5;
+        }
+        
+        /* Breadcrumb */
+        .breadcrumb-custom {
+            background: #f8fafc;
+            padding: 12px 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .breadcrumb-custom a {
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .breadcrumb-custom a:hover {
+            color: #764ba2;
+        }
+        
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Badge */
+        .badge-custom {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        /* Animation */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        .pulse-icon {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            .glass-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="glass-card">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="pulse-icon">
+                            <i class="fas fa-folder-open fa-3x gradient-text"></i>
+                        </div>
+                        <div>
+                            <h2 class="fw-bold mb-1">Extracted Files</h2>
+                            <p class="text-muted mb-0">{{ file.original_filename }}</p>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i> {{ file.upload_date.strftime('%Y-%m-%d %H:%M:%S') }} |
+                            <i class="fas fa-database me-1"></i> {{ "%.2f"|format(file.file_size) }} MB
+                        </small>
+                        <span class="badge-custom ms-2">
+                            <i class="fas fa-files me-1"></i> {{ files|length }} files
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-gradient">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search files by name...">
+            </div>
+            
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3 col-6">
+                    <div class="stat-mini-card">
+                        <i class="fas fa-file fa-2x gradient-text mb-2"></i>
+                        <h3 class="fw-bold mb-0">{{ files|length }}</h3>
+                        <small class="text-muted">Total Files</small>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-mini-card">
+                        <i class="fab fa-python fa-2x" style="color: #3776ab;"></i>
+                        <h3 class="fw-bold mb-0">{{ files|selectattr('name', 'match', '.*\\.py$')|list|length }}</h3>
+                        <small class="text-muted">Python Files</small>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mt-3 mt-md-0">
+                    <div class="stat-mini-card">
+                        <i class="fab fa-js fa-2x" style="color: #f7df1e;"></i>
+                        <h3 class="fw-bold mb-0">{{ files|selectattr('name', 'match', '.*\\.js$')|list|length }}</h3>
+                        <small class="text-muted">JavaScript Files</small>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mt-3 mt-md-0">
+                    <div class="stat-mini-card">
+                        <i class="fab fa-html5 fa-2x" style="color: #e34f26;"></i>
+                        <h3 class="fw-bold mb-0">{{ files|selectattr('name', 'match', '.*\\.html$')|list|length }}</h3>
+                        <small class="text-muted">HTML Files</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Breadcrumb -->
+            <div class="breadcrumb-custom">
+                <i class="fas fa-folder-open text-primary me-2"></i>
+                <span>Root</span>
+                <i class="fas fa-chevron-right mx-2 text-muted"></i>
+                <span class="text-primary">{{ file.original_filename }}</span>
+                <i class="fas fa-chevron-right mx-2 text-muted"></i>
+                <span>extracted</span>
+            </div>
+            
+            <!-- File List -->
+            <h5 class="mb-3 fw-semibold">
+                <i class="fas fa-list me-2 gradient-text"></i>File Contents
+            </h5>
+            <div id="fileListContainer">
+                {% if files %}
+                    {% for extracted_file in files %}
+                    <div class="file-card" data-filename="{{ extracted_file.name }}" onclick="viewFileContent('{{ extracted_file.full_path }}', '{{ extracted_file.name }}', '{{ extracted_file.path }}')">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-3">
+                                {% set ext = extracted_file.name.split('.')[-1].lower() %}
+                                {% if ext == 'py' %}
+                                    <i class="fab fa-python fa-2x" style="color: #3776ab;"></i>
+                                {% elif ext == 'js' %}
+                                    <i class="fab fa-js fa-2x" style="color: #f7df1e;"></i>
+                                {% elif ext == 'html' %}
+                                    <i class="fab fa-html5 fa-2x" style="color: #e34f26;"></i>
+                                {% elif ext == 'css' %}
+                                    <i class="fab fa-css3-alt fa-2x" style="color: #264de4;"></i>
+                                {% elif ext == 'json' %}
+                                    <i class="fas fa-code fa-2x" style="color: #f093fb;"></i>
+                                {% elif ext in ['jpg', 'png', 'gif', 'svg'] %}
+                                    <i class="fas fa-image fa-2x" style="color: #10b981;"></i>
+                                {% else %}
+                                    <i class="fas fa-file fa-2x" style="color: #6b7280;"></i>
+                                {% endif %}
+                                
+                                <div>
+                                    <h6 class="fw-semibold mb-1">{{ extracted_file.name }}</h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-folder me-1"></i> {{ extracted_file.path }}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-light text-dark me-2">{{ extracted_file.size_kb }} KB</span>
+                                <i class="fas fa-chevron-right text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-folder-open fa-5x text-muted mb-3"></i>
+                        <h5 class="text-muted">No files extracted</h5>
+                        <p class="text-muted">This ZIP file appears to be empty or couldn't be extracted properly.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- File Preview Modal -->
+    <div class="modal fade" id="filePreviewModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <div>
+                        <h5 class="modal-title fw-bold" id="modalFileName"></h5>
+                        <small class="text-muted" id="modalFilePath"></small>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-0">
+                    <div id="fileContent" class="code-preview">
+                        <div class="text-center py-5">
+                            <div class="loading-spinner mx-auto mb-3"></div>
+                            <p>Loading file content...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Close
+                    </button>
+                    <button type="button" class="btn btn-gradient" id="downloadFileBtn">
+                        <i class="fas fa-download me-2"></i>Download
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+    </style>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const fileCards = document.querySelectorAll('.file-card');
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                fileCards.forEach(card => {
+                    const filename = card.getAttribute('data-filename').toLowerCase();
+                    if (filename.includes(searchTerm)) {
+                        card.style.display = 'block';
+                        card.style.animation = 'fadeInRight 0.5s ease';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // File preview function
+        let currentFilePath = '';
+        let currentFileName = '';
+        
+        function viewFileContent(filePath, fileName, relativePath) {
+            currentFilePath = filePath;
+            currentFileName = fileName;
+            
+            document.getElementById('modalFileName').innerHTML = `<i class="fas fa-file-code me-2"></i>${fileName}`;
+            document.getElementById('modalFilePath').innerHTML = `<i class="fas fa-folder me-1"></i> ${relativePath}`;
+            
+            // Simulate loading
+            const fileContentDiv = document.getElementById('fileContent');
+            fileContentDiv.innerHTML = '<div class="text-center py-5"><div class="loading-spinner mx-auto mb-3"></div><p>Loading file content...</p></div>';
+            
+            // Simulate file content based on extension
+            setTimeout(() => {
+                const ext = fileName.split('.').pop().toLowerCase();
+                let previewContent = '';
+                
+                if (ext === 'py') {
+                    previewContent = `# Python File: ${fileName}
+# This is a preview of the extracted Python file
+
+import os
+import sys
+
+def main():
+    """Main function"""
+    print("Hello from ${fileName}")
+    print(f"File path: ${filePath}")
+    
+    # Your code here
+    return True
+
+if __name__ == "__main__":
+    main()`;
+                } else if (ext === 'js') {
+                    previewContent = `// JavaScript File: ${fileName}
+// File preview from extracted ZIP
+
+function main() {
+    console.log("Hello from ${fileName}");
+    console.log("File path: ${filePath}");
+    
+    // Your JavaScript code here
+    return true;
+}
+
+// Initialize
+main();`;
+                } else if (ext === 'html') {
+                    previewContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${fileName}</title>
+</head>
+<body>
+    <h1>Extracted File Preview</h1>
+    <p>File: ${fileName}</p>
+    <p>Path: ${filePath}</p>
+</body>
+</html>`;
+                } else if (ext === 'css') {
+                    previewContent = `/* CSS File: ${fileName} */
+/* Extracted from ZIP archive */
+
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f5f5f5;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.title {
+    color: #667eea;
+    font-size: 24px;
+}`;
+                } else if (ext === 'json') {
+                    previewContent = `{
+    "name": "${fileName}",
+    "type": "extracted_file",
+    "path": "${filePath}",
+    "status": "success",
+    "metadata": {
+        "extracted_from": "${currentFileName}",
+        "timestamp": "${new Date().toISOString()}"
+    }
+}`;
+                } else {
+                    previewContent = `File: ${fileName}
+Path: ${filePath}
+Size: ${(Math.random() * 100 + 10).toFixed(2)} KB
+
+This is a preview of the extracted file content.
+In a production environment, the actual file contents would be displayed here.
+
+File type: ${ext || 'unknown'}
+Extracted from: ZIP archive`;
+                }
+                
+                fileContentDiv.innerHTML = `<pre style="margin: 0; white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.5;">${escapeHtml(previewContent)}</pre>`;
+            }, 800);
+            
+            const modal = new bootstrap.Modal(document.getElementById('filePreviewModal'));
+            modal.show();
+        }
+        
+        // Download functionality
+        document.getElementById('downloadFileBtn')?.addEventListener('click', function() {
+            // In production, implement actual file download
+            alert(`📥 Downloading: ${currentFileName}\n\nIn production, this would download the actual file from the server.`);
+        });
+        
+        // Escape HTML helper
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('filePreviewModal'));
+                if (modal) modal.hide();
+            }
+        });
+        
+        // Animate file cards on load
+        fileCards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.05}s`;
+        });
+        
+        console.log(`✅ Loaded ${fileCards.length} extracted files`);
+    </script>
+</body>
+</html>

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Iftekhar Hosting Bot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Wave Animation */
+        .waves {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.1;
+        }
+        
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="1" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') repeat-x;
+            background-size: cover;
+            animation: wave 20s linear infinite;
+        }
+        
+        .wave:nth-child(2) {
+            bottom: 0;
+            animation: wave2 15s linear infinite;
+            opacity: 0.5;
+        }
+        
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        @keyframes wave2 {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        /* Glow Effect */
+        .glow {
+            animation: glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% {
+                text-shadow: 0 0 5px rgba(102,126,234,0.5);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(102,126,234,0.8);
+            }
+        }
+        
+        /* Main Container */
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            padding: 40px 20px;
+        }
+        
+        /* Neon Card */
+        .neon-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 30px;
+            padding: 45px 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: cardGlow 2s ease-in-out infinite, slideUpFade 0.8s ease;
+            max-width: 550px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        @keyframes cardGlow {
+            0%, 100% {
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            }
+            50% {
+                box-shadow: 0 25px 60px -12px rgba(102, 126, 234, 0.4);
+            }
+        }
+        
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Animated Border */
+        .neon-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #4facfe);
+            border-radius: 30px;
+            z-index: -1;
+            animation: borderRotate 4s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .neon-card:hover::before {
+            opacity: 1;
+        }
+        
+        @keyframes borderRotate {
+            0% {
+                filter: blur(5px);
+            }
+            50% {
+                filter: blur(10px);
+            }
+            100% {
+                filter: blur(5px);
+            }
+        }
+        
+        /* Input Styles */
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .input-wrapper input {
+            width: 100%;
+            padding: 14px 15px 14px 45px;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .input-wrapper input:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+        
+        /* Password Strength Meter */
+        .strength-meter {
+            height: 5px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+        }
+        
+        .strength-text {
+            font-size: 12px;
+            margin-top: 5px;
+            transition: all 0.3s;
+        }
+        
+        /* Animated Button */
+        .btn-register {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            padding: 14px;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 16px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .btn-register:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px -5px rgba(102, 126, 234, 0.6);
+        }
+        
+        /* Feature Cards */
+        .feature-card {
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            background: linear-gradient(135deg, #667eea10, #764ba210);
+        }
+        
+        .feature-card i {
+            font-size: 24px;
+            margin-bottom: 8px;
+            display: inline-block;
+            animation: iconBounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes iconBounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        /* Checkbox Animation */
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .checkbox-wrapper input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        
+        /* Flash Messages */
+        .flash-message {
+            padding: 12px 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            animation: slideInLeft 0.5s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .success {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724;
+        }
+        
+        .error {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .neon-card {
+                padding: 30px 25px;
+            }
+            
+            .feature-card {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Wave Background -->
+    <div class="waves">
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+    
+    <div class="register-container">
+        <div class="neon-card">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <div class="glow">
+                    <i class="fas fa-user-plus fa-4x" style="background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                </div>
+                <h2 class="mt-3" style="font-weight: 800; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    Create Account
+                </h2>
+                <p class="text-muted">Join the future of bot hosting</p>
+            </div>
+            
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %} fa-lg"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <!-- Registration Form -->
+            <form method="POST" id="registerForm">
+                <div class="input-wrapper">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" name="username" required placeholder="Username" autofocus>
+                </div>
+                
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" name="email" required placeholder="Email Address">
+                </div>
+                
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" name="password" required placeholder="Password">
+                    <div class="strength-meter">
+                        <div class="strength-bar" id="strengthBar"></div>
+                    </div>
+                    <div class="strength-text" id="strengthText"></div>
+                </div>
+                
+                <div class="input-wrapper">
+                    <i class="fas fa-check-circle"></i>
+                    <input type="password" id="confirm_password" name="confirm_password" required placeholder="Confirm Password">
+                    <small id="confirmMessage" style="font-size: 12px; position: absolute; right: 0; top: -20px;"></small>
+                </div>
+                
+                <div class="checkbox-wrapper mb-4">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms" style="font-size: 14px;">
+                        I agree to the <a href="#" style="color: #667eea;">Terms of Service</a> and <a href="#" style="color: #667eea;">Privacy Policy</a>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-register text-white" id="registerBtn">
+                    <i class="fas fa-user-plus me-2"></i>Create Account
+                    <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+            </form>
+            
+            <hr class="my-4">
+            
+            <div class="text-center">
+                <p class="mb-0">
+                    Already have an account? 
+                    <a href="{{ url_for('login') }}" style="color: #667eea; text-decoration: none; font-weight: 600;">
+                        Login here <i class="fas fa-arrow-right"></i>
+                    </a>
+                </p>
+            </div>
+            
+            <!-- Features -->
+            <div class="row mt-4 g-2">
+                <div class="col-6">
+                    <div class="feature-card" onclick="alert('Free 1GB storage for all users!')">
+                        <i class="fas fa-database" style="color: #667eea;"></i>
+                        <small class="d-block">1GB Free Storage</small>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="feature-card" onclick="alert('Deploy up to 3 bots for free!')">
+                        <i class="fas fa-robot" style="color: #764ba2;"></i>
+                        <small class="d-block">3 Free Bots</small>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="feature-card" onclick="alert('Automatic ZIP extraction included!')">
+                        <i class="fas fa-file-archive" style="color: #f093fb;"></i>
+                        <small class="d-block">Auto Extraction</small>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="feature-card" onclick="alert('24/7 community support available!')">
+                        <i class="fas fa-headset" style="color: #4facfe;"></i>
+                        <small class="d-block">24/7 Support</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Password Strength Checker
+        const passwordInput = document.getElementById('password');
+        const confirmInput = document.getElementById('confirm_password');
+        const strengthBar = document.getElementById('strengthBar');
+        const strengthText = document.getElementById('strengthText');
+        const confirmMessage = document.getElementById('confirmMessage');
+        
+        function checkStrength(password) {
+            let strength = 0;
+            let color = '#dc3545';
+            let text = 'Very Weak';
+            
+            if (password.length >= 6) strength++;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            if (strength >= 4) {
+                color = '#28a745';
+                text = 'Strong 💪';
+            } else if (strength >= 3) {
+                color = '#ffc107';
+                text = 'Medium ⚠️';
+            } else if (strength >= 2) {
+                color = '#fd7e14';
+                text = 'Weak ❌';
+            } else {
+                color = '#dc3545';
+                text = 'Very Weak ❌❌';
+            }
+            
+            strengthBar.style.width = (strength / 5 * 100) + '%';
+            strengthBar.style.backgroundColor = color;
+            strengthText.textContent = text;
+            strengthText.style.color = color;
+            
+            return strength;
+        }
+        
+        passwordInput.addEventListener('input', function() {
+            checkStrength(this.value);
+            checkConfirm();
+        });
+        
+        function checkConfirm() {
+            if (confirmInput.value === passwordInput.value && passwordInput.value !== '') {
+                confirmMessage.innerHTML = '✓ Passwords match!';
+                confirmMessage.style.color = '#28a745';
+                return true;
+            } else if (confirmInput.value !== '') {
+                confirmMessage.innerHTML = '✗ Passwords do not match!';
+                confirmMessage.style.color = '#dc3545';
+                return false;
+            }
+            return false;
+        }
+        
+        confirmInput.addEventListener('input', checkConfirm);
+        
+        // Form Submit Animation
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            if (!checkConfirm()) {
+                e.preventDefault();
+                alert('Please make sure passwords match!');
+                return;
+            }
+            
+            const btn = document.getElementById('registerBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating Account...';
+            btn.disabled = true;
+        });
+        
+        // Animate on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        });
+        
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.5s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
