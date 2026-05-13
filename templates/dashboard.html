@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Iftekhar Hosting Bot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* আপনার বিদ্যমান CSS কোড এখানে রাখুন - অপরিবর্তিত */
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1a1a2e;
+            --gray: #6b7280;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f0f2f5;
+            overflow-x: hidden;
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, var(--dark) 0%, #0f0f1a 100%);
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-header {
+            padding: 25px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeInDown 0.6s ease;
+        }
+        
+        .logo-icon {
+            font-size: 45px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            margin: 8px 15px;
+            position: relative;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            padding: 12px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .nav-link i {
+            width: 24px;
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+        
+        .nav-link:hover {
+            background: rgba(102, 126, 234, 0.2);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .nav-link:hover i {
+            transform: scale(1.1);
+        }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .stat-card:hover::before {
+            left: 100%;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--dark);
+            background: linear-gradient(135deg, var(--dark), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 20px;
+            padding: 50px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+        }
+        
+        .upload-area:hover, .upload-area.drag-over {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            transform: scale(1.02);
+        }
+        
+        .upload-icon {
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .file-item {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+            animation: fadeInRight 0.5s ease;
+        }
+        
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .file-item:hover {
+            transform: translateX(8px);
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress {
+            height: 8px;
+            border-radius: 10px;
+            background: #e2e8f0;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 12px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-gradient::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-gradient:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .flash-message {
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            animation: slideInRight 0.5s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                margin-left: -280px;
+            }
+            .sidebar.active {
+                margin-left: 0;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .animate-fade-in {
+            animation: fadeInDown 0.6s ease;
+        }
+        
+        .animate-slide-left {
+            animation: slideInLeft 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon">
+                <i class="fas fa-robot" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+            </div>
+            <h5 class="mt-2 fw-bold">Iftekhar Bot</h5>
+            <small class="text-muted">Welcome, {{ user.username }}!</small>
+        </div>
+        
+        <div class="sidebar-nav">
+            <div class="nav-item">
+                <a class="nav-link active" href="#" onclick="showSection('overview')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Overview</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="#" onclick="showSection('files')">
+                    <i class="fas fa-folder"></i>
+                    <span>My Files</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="#" onclick="showSection('bots')">
+                    <i class="fas fa-robot"></i>
+                    <span>My Bots</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="#" onclick="showSection('upload')">
+                    <i class="fas fa-upload"></i>
+                    <span>Upload File</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="#" onclick="showSection('templates')">
+                    <i class="fas fa-code"></i>
+                    <span>Bot Templates</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="#" onclick="showSection('analytics')">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="#" onclick="showSection('settings')">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+        </div>
+        
+        <div class="position-absolute bottom-0 start-0 w-100 p-3">
+            <div class="nav-item">
+                <a class="nav-link" href="{{ url_for('logout') }}">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <nav class="navbar navbar-light bg-white rounded-3 mb-4 p-3 shadow-sm animate-fade-in">
+            <div class="container-fluid">
+                <button class="btn btn-outline-secondary d-md-none" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h5 class="mb-0 fw-bold">Dashboard</h5>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle rounded-pill" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle me-2"></i>{{ user.username }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#" onclick="showSection('profile')"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="showSection('settings')"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        <i class="fas fa-{% if category == 'success' %}check-circle fa-lg{% elif category == 'error' %}exclamation-circle fa-lg{% else %}info-circle fa-lg{% endif %}"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Overview Section -->
+        <div id="overview-section">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stat-card" onclick="showSection('files')">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted mb-1">Total Files</p>
+                                <div class="stat-value">{{ stats.total_files }}</div>
+                                <small class="text-success"><i class="fas fa-arrow-up"></i> 12%</small>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-file-archive" style="color: var(--primary);"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card" onclick="showSection('files')">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted mb-1">Storage Used</p>
+                                <div class="stat-value">{{ stats.storage_used }} MB</div>
+                                <small class="text-muted">of {{ stats.storage_limit }} MB</small>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-database" style="color: var(--success);"></i>
+                            </div>
+                        </div>
+                        <div class="progress mt-3">
+                            <div class="progress-bar" style="width: {{ stats.storage_percent }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card" onclick="showSection('bots')">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted mb-1">Total Bots</p>
+                                <div class="stat-value">{{ stats.total_bots }}</div>
+                                <small class="text-success"><i class="fas fa-check-circle"></i> {{ stats.running_bots }} running</small>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-robot" style="color: var(--warning);"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted mb-1">Uptime</p>
+                                <div class="stat-value">99.9%</div>
+                                <small class="text-success"><i class="fas fa-chart-line"></i> This month</small>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-chart-line" style="color: var(--danger);"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-7">
+                    <div class="stat-card">
+                        <h5 class="mb-3"><i class="fas fa-chart-bar me-2" style="color: var(--primary);"></i>Storage Usage Analytics</h5>
+                        <canvas id="storageChart" height="250"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="stat-card">
+                        <h5 class="mb-3"><i class="fas fa-clock me-2" style="color: var(--primary);"></i>Recent Activity</h5>
+                        <div id="recent-activity">
+                            {% if files %}
+                                {% for file in files[:3] %}
+                                <div class="file-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="fas fa-file-archive me-2" style="color: var(--primary);"></i>
+                                            <strong>{{ file.original_filename[:30] }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ file.upload_date.strftime('%Y-%m-%d %H:%M') }}</small>
+                                        </div>
+                                        <a href="{{ url_for('view_extracted_files', file_id=file.id) }}" class="btn btn-sm btn-gradient">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-inbox fa-3x text-muted mb-2"></i>
+                                    <p class="text-muted">No recent activity</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Files Section -->
+        <div id="files-section" style="display: none;">
+            <div class="stat-card">
+                <h5 class="mb-3"><i class="fas fa-folder-open me-2" style="color: var(--primary);"></i>All Uploaded Files</h5>
+                <div id="all-files-list">
+                    {% if all_files %}
+                        {% for file in all_files %}
+                        <div class="file-item" id="file-{{ file.id }}">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div class="flex-grow-1">
+                                    <i class="fas fa-file-archive me-2" style="color: var(--primary);"></i>
+                                    <strong>{{ file.original_filename }}</strong>
+                                    <div class="mt-1">
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar"></i> {{ file.upload_date.strftime('%Y-%m-%d %H:%M:%S') }} |
+                                            <i class="fas fa-database"></i> {{ "%.2f"|format(file.file_size) }} MB |
+                                            {% if file.is_extracted %}
+                                                <span class="text-success"><i class="fas fa-check-circle"></i> Extracted ({{ file.extracted_files_count }} files)</span>
+                                            {% else %}
+                                                <span class="text-warning"><i class="fas fa-clock"></i> Pending</span>
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="mt-2 mt-sm-0">
+                                    {% if file.is_extracted %}
+                                        <a href="{{ url_for('view_extracted_files', file_id=file.id) }}" class="btn btn-sm btn-gradient me-2">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    {% endif %}
+                                    <button class="btn btn-sm btn-danger" onclick="deleteFile({{ file.id }})">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
+                            <p class="text-muted">No files uploaded yet. Go to Upload section to add files!</p>
+                            <button class="btn btn-gradient" onclick="showSection('upload')">
+                                <i class="fas fa-upload me-2"></i>Upload Now
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Upload Section -->
+        <div id="upload-section" style="display: none;">
+            <div class="stat-card">
+                <h5 class="mb-3"><i class="fas fa-cloud-upload-alt me-2" style="color: var(--primary);"></i>Upload ZIP File</h5>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt fa-4x" style="color: var(--primary);"></i>
+                    </div>
+                    <h6 class="mt-3">Drag & Drop ZIP File Here</h6>
+                    <p class="text-muted">or click to browse</p>
+                    <input type="file" id="fileInput" style="display: none;" accept=".zip">
+                    <form id="uploadForm" method="POST" action="/upload" enctype="multipart/form-data">
+                        <input type="hidden" name="platform" id="platform" value="python">
+                        <button type="button" class="btn btn-gradient mt-2" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-folder-open me-2"></i>Choose File
+                        </button>
+                    </form>
+                </div>
+                <div id="uploadProgress" style="display: none;" class="mt-3">
+                    <div class="progress">
+                        <div id="progressBar" class="progress-bar" style="width: 0%"></div>
+                    </div>
+                    <p class="text-center mt-2" id="progressText">Uploading...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bots Section -->
+        <div id="bots-section" style="display: none;">
+            <div class="stat-card">
+                <h5 class="mb-3"><i class="fas fa-robot me-2" style="color: var(--primary);"></i>My Deployed Bots</h5>
+                <div id="my-bots-list">
+                    {% if bots %}
+                        {% for bot in bots %}
+                        <div class="file-item" id="bot-{{ bot.id }}">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div class="flex-grow-1">
+                                    <i class="fas fa-robot me-2" style="color: var(--success);"></i>
+                                    <strong>{{ bot.bot_name }}</strong>
+                                    <div class="mt-1">
+                                        <small class="text-muted">
+                                            <i class="fas fa-code"></i> {{ bot.bot_type }} |
+                                            <i class="fas fa-calendar"></i> Created: {{ bot.created_at.strftime('%Y-%m-%d') }}
+                                        </small>
+                                        <br>
+                                        <span class="badge {% if bot.bot_status == 'running' %}bg-success{% else %}bg-secondary{% endif %}" id="bot-status-{{ bot.id }}">
+                                            <i class="fas fa-{% if bot.bot_status == 'running' %}play{% else %}stop{% endif %} me-1"></i>
+                                            {{ bot.bot_status }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="mt-2 mt-sm-0">
+                                    {% if bot.bot_status == 'running' %}
+                                        <button class="btn btn-sm btn-warning me-2" onclick="stopBot({{ bot.id }})">
+                                            <i class="fas fa-stop"></i> Stop
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-sm btn-success me-2" onclick="startBot({{ bot.id }})">
+                                            <i class="fas fa-play"></i> Start
+                                        </button>
+                                    {% endif %}
+                                    <button class="btn btn-sm btn-danger" onclick="deleteBot({{ bot.id }})">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-robot fa-4x text-muted mb-3"></i>
+                            <p class="text-muted">No bots deployed yet. Go to Bot Templates to deploy your first bot!</p>
+                            <button class="btn btn-gradient" onclick="showSection('templates')">
+                                <i class="fas fa-code me-2"></i>Browse Templates
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Templates Section -->
+        <div id="templates-section" style="display: none;">
+            <div class="stat-card">
+                <h5 class="mb-3"><i class="fas fa-code me-2" style="color: var(--primary);"></i>Available Bot Templates</h5>
+                <div class="row mt-3" id="templates-container">
+                    <div class="text-center py-5">
+                        <div class="loading-spinner mx-auto mb-3"></div>
+                        <p>Loading templates...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analytics Section -->
+        <div id="analytics-section" style="display: none;">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="stat-card">
+                        <h5 class="mb-3"><i class="fas fa-chart-line me-2" style="color: var(--primary);"></i>Bot Performance</h5>
+                        <canvas id="botPerformanceChart" height="300"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="stat-card">
+                        <h5 class="mb-3"><i class="fas fa-chart-pie me-2" style="color: var(--primary);"></i>File Type Distribution</h5>
+                        <canvas id="fileTypeChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Settings Section -->
+        <div id="settings-section" style="display: none;">
+            <div class="stat-card">
+                <h5 class="mb-3"><i class="fas fa-cog me-2" style="color: var(--primary);"></i>Account Settings</h5>
+                <form id="settingsForm" class="mt-3">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Username</label>
+                        <input type="text" class="form-control" value="{{ user.username }}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Email Address</label>
+                        <input type="email" class="form-control" id="email" value="{{ user.email }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" placeholder="Leave blank to keep current">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmNewPassword" placeholder="Confirm new password">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Storage Usage</label>
+                        <div class="progress mb-2">
+                            <div class="progress-bar" style="width: {{ stats.storage_percent }}%"></div>
+                        </div>
+                        <small class="text-muted">{{ stats.storage_used }} MB used of {{ stats.storage_limit }} MB</small>
+                    </div>
+                    <button type="submit" class="btn btn-gradient">
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let storageChart, botChart, fileTypeChart;
+        
+        function initCharts() {
+            const storageCtx = document.getElementById('storageChart');
+            if (storageCtx) {
+                storageChart = new Chart(storageCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                        datasets: [{
+                            label: 'Storage Used (MB)',
+                            data: [{{ stats.storage_used * 0.25 }}, {{ stats.storage_used * 0.5 }}, {{ stats.storage_used * 0.75 }}, {{ stats.storage_used }}],
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+            
+            const botCtx = document.getElementById('botPerformanceChart');
+            if (botCtx) {
+                botChart = new Chart(botCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Bot 1', 'Bot 2', 'Bot 3'],
+                        datasets: [{
+                            label: 'Uptime (%)',
+                            data: [99.9, 99.8, 99.7],
+                            backgroundColor: ['#667eea', '#764ba2', '#f093fb'],
+                            borderRadius: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+            
+            const fileCtx = document.getElementById('fileTypeChart');
+            if (fileCtx) {
+                fileTypeChart = new Chart(fileCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['ZIP Files', 'Python', 'JavaScript', 'Other'],
+                        datasets: [{
+                            data: [{{ stats.total_files }}, {{ stats.total_bots }}, 0, 0],
+                            backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#4facfe'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+        }
+        
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+        
+        function showSection(section) {
+            const sections = ['overview', 'files', 'upload', 'bots', 'templates', 'analytics', 'settings'];
+            sections.forEach(s => {
+                const el = document.getElementById(s + '-section');
+                if (el) el.style.display = 'none';
+            });
+            const targetSection = document.getElementById(section + '-section');
+            if (targetSection) targetSection.style.display = 'block';
+            
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            if (event && event.target) {
+                const clickedLink = event.target.closest('.nav-link');
+                if (clickedLink) clickedLink.classList.add('active');
+            }
+        }
+        
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        
+        if (uploadArea) {
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('drag-over');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('drag-over');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+                const file = e.dataTransfer.files[0];
+                if (file && file.name.endsWith('.zip')) {
+                    uploadFile(file);
+                } else {
+                    alert('Please upload a ZIP file!');
+                }
+            });
+        }
+        
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files[0]) {
+                    uploadFile(e.target.files[0]);
+                }
+            });
+        }
+        
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('platform', 'python');
+            
+            const progressDiv = document.getElementById('uploadProgress');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            if (progressDiv) progressDiv.style.display = 'block';
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                if (progressBar) progressBar.style.width = progress + '%';
+                if (progressText) progressText.innerText = `Uploading... ${progress}%`;
+                if (progress >= 100) {
+                    clearInterval(interval);
+                }
+            }, 200);
+            
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                }
+                return response;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if (progressText) progressText.innerText = 'Upload failed!';
+                setTimeout(() => {
+                    if (progressDiv) progressDiv.style.display = 'none';
+                }, 2000);
+            });
+        }
+        
+        function startBot(botId) {
+            fetch(`/bot/${botId}/start`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+        
+        function stopBot(botId) {
+            fetch(`/bot/${botId}/stop`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+        
+        function deleteBot(botId) {
+            if (confirm('Are you sure you want to delete this bot? This action cannot be undone!')) {
+                fetch(`/bot/${botId}/delete`, {
+                    method: 'DELETE',
+                    headers: {'Content-Type': 'application/json'}
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                });
+            }
+        }
+        
+        function deleteFile(fileId) {
+            if (confirm('Are you sure you want to delete this file?')) {
+                fetch(`/api/files/${fileId}/delete`, {
+                    method: 'DELETE',
+                    headers: {'Content-Type': 'application/json'}
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                });
+            }
+        }
+        
+        function loadTemplates() {
+            fetch('/api/bots/templates')
+                .then(response => response.json())
+                .then(templates => {
+                    const container = document.getElementById('templates-container');
+                    if (!container) return;
+                    
+                    if (templates.length === 0) {
+                        container.innerHTML = '<div class="text-center py-5"><p class="text-muted">No templates available</p></div>';
+                        return;
+                    }
+                    
+                    container.innerHTML = templates.map(template => `
+                        <div class="col-md-4 mb-3">
+                            <div class="file-item text-center" style="cursor: pointer;" onclick="deployBot(${template.id}, '${template.name}')">
+                                <div style="font-size: 3rem;">${template.icon || '🤖'}</div>
+                                <h5 class="mt-2 fw-bold">${template.name}</h5>
+                                <p class="text-muted small">${template.description || 'No description'}</p>
+                                <div class="mt-2">
+                                    <span class="badge bg-primary">${template.type}</span>
+                                    <span class="badge bg-secondary">v${template.version || '1.0'}</span>
+                                </div>
+                                <button class="btn btn-gradient btn-sm mt-3">
+                                    <i class="fas fa-rocket me-1"></i> Deploy Now
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                })
+                .catch(error => {
+                    console.error('Error loading templates:', error);
+                    const container = document.getElementById('templates-container');
+                    if (container) {
+                        container.innerHTML = '<div class="text-center py-5"><p class="text-danger">Error loading templates. Please try again later.</p></div>';
+                    }
+                });
+        }
+        
+        function deployBot(templateId, templateName) {
+            const botName = prompt('Enter a name for your bot:', templateName + ' Bot');
+            if (botName) {
+                fetch('/api/bots/deploy', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        template_id: templateId,
+                        bot_name: botName
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('✅ ' + data.message);
+                        location.reload();
+                    } else {
+                        alert('❌ Failed to deploy bot: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    alert('❌ Error deploying bot: ' + error);
+                });
+            }
+        }
+        
+        function refreshStats() {
+            fetch('/api/stats')
+                .then(response => response.json())
+                .then(stats => {
+                    console.log('Stats refreshed:', stats);
+                })
+                .catch(error => console.error('Error refreshing stats:', error));
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            loadTemplates();
+            setInterval(refreshStats, 30000);
+        });
+    </script>
+</body>
+</html>
